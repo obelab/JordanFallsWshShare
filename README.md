@@ -5,4 +5,4 @@ There are two items in this repository:
 
 RStaninputdata.rds- This is a R data file that includes all the input data sets. It needs to be imported into R with the appropriate command.
 
-RStancode.R- RStan code needed to run the code. The "RStan" package needs to be installed prior to running the model. 
+RStancode.R- RStan code needed to run the code. The "rstan" and "rstudioapi" packages need to be installed prior to running the model. 
