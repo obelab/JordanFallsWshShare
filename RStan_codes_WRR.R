@@ -76,7 +76,6 @@ model {
 vector [nr] tot; 			// Sum of all loadings from all sources
 vector [nr] sigma;		//SD for watershed random effects
 vector [nr] y_hat;		//total loadings plus random effects minus waterbody losses
-vector [nr] A;			//To compile Agriculture with PIC
 vector [nr] Dpr;			//To compile pre-1980 urban with PIC
 vector [nr] Dpt;			//To compile post-1980 urban with PIC
 vector [nr] W;			//To compile undeveloped urban with PIC
