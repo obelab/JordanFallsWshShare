@@ -95,6 +95,7 @@ vector [nr] C_r;   		//chickens for aggregating subwatersheds
 vector [nr] H_r;			//swine for aggregating subwatersheds
 vector [nr] Cw_r;		//cows  for aggregating subwatersheds
 vector [nr] y;				//loading
+int w;
 
 // Loop to determine export for each watershed-year
 for(i in 1:nr){
