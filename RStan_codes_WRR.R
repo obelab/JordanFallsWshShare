@@ -353,7 +353,7 @@ Annual_TP <- readRDS("./Annual_TP.rds") #load annual input data set
 
 library("rstan")
 library("rstudioapi")
-#run the annual model (data is the list of data sets. For other parameters, return to the function description or the example provided in the readme)
+#run the annual model (data is the list of data sets. For other parameters, return to the function description or the example provided in the README)
 model_annual = stan(model_code=stanmodelcode_annual, data=Annual_TP, iter=iter, 
              warmup=warmup, thin=thin, chains=3,cores=3,
              control = list(adapt_delta =adapt_delta ,max_treedepth =max_treedepth ))
