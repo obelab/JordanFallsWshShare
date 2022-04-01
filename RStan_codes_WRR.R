@@ -78,6 +78,7 @@ vector [nr] sigma;		//SD for watershed random effects
 vector [nr] y_hat;		//total loadings plus random effects minus waterbody losses
 vector [nr] Dpr;			//To compile pre-1980 urban with PIC
 vector [nr] Dpt;			//To compile post-1980 urban with PIC
+vector [nr] A;			//To compile Agricultur with PIC 
 vector [nr] W;			//To compile undeveloped urban with PIC
 vector [nr] Dch; 		 	//To compile dischargers with stream/reservoir losses
 vector [nr] alpha_vals;		// Watershed indicator
