@@ -259,7 +259,7 @@ vector [nr] Dpt;			//To compile post-1980 urban with PIC
 vector [nr] W;			//To compile undeveloped urban with PIC
 vector [nr] Dch; 		 	//To compile dischargers with stream/reservoir losses
 vector [nr] alpha_vals;		// Watershed indicator
-vector [nr] A;			//Agriculture vector
+vector [nr] A_lc;			//Agriculture vector
 vector [nr] D_lc_pre;		//pre-1980  vector		
 vector [nr] D_lc_post;		//post-1980  vector
 vector [nr] W_lc;		//Undeveloped  vector
@@ -274,7 +274,7 @@ vector [nr] y;				//loading
 vector [8] psi;       //precipitation weight
 vector [nr] prec;     //scaled precipitation
 vector [nr] av_prec;  //normalized precipitation
-
+int w;
 //Loop to get precipitation weighting coefficient
 for (m in 1:8){
 if (m<=(Be_psi-1)){
