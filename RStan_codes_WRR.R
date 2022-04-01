@@ -37,11 +37,9 @@ int l_start [nr];			            //index to link subwatersheds to LMSs
 int l_end [nr];			              //index to link subwatersheds to LMSs
 int d_start [nr];			            //index to link dischargers to LMSs
 int d_end [nr];			              //index to link dischargers to LMSs
-
 }
 
 transformed data{
-
 }
 
 parameters {  
@@ -64,12 +62,9 @@ vector [wshed_size] alpha;			//# of watersheds
 real<lower = 0, upper = 2> sigma_B1;		//PIC SD
 real<lower = 0, upper = 3> Bp_mean;		//PIC mean
 vector [nr] ly;					// unknown true loads
-
 }
 
 transformed parameters {
-
-
 }
 
 model {
@@ -124,30 +119,25 @@ Cw[i] = Be_cw * pow(av_prec2[i],pic_p[7]) .* Cw_r[i];
 Dch[i] = Be_dch * Disch[i];
 }
 
-
 for (i in 1:nr){
   //Loop to determine random effect for each watershed
 w= wsd[i];
 sigma[i] = sqrt(pow(SD[i],2)+pow(sigma_res,2));   //with regular sigma values
 alpha_vals[i] = alpha[w];
-
 }
 //Sum loadings from all sources
 tot =  A + D + W + C + H + Cw + Dch;
 //Add random effects to source loadings and subtract losses from upstream loads
 y_hat = tot + alpha_vals - up_t_load1 .* (1-(exp((-Sn ./ (1+PIC_q*av_prec)) .* str_loss_load1) .* exp((-Sn2 ./ (1+PIC_q*av_prec)) ./ res_loss_load1))) - up_t_load2 .* (1-(exp((-Sn ./ (1+PIC_q*av_prec)) .* str_loss_load2) .* exp((-Sn2 ./ (1+PIC_q*av_prec)) ./ res_loss_load2))) - up_t_load3 .* (1-(exp((-Sn ./(1+PIC_q*av_prec)) .* str_loss_load3) .* exp((-Sn2 ./ (1+PIC_q*av_prec)) ./ res_loss_load3)));
 
-
 //priors
 Be_a ~ normal(100,65);  //Prior for agriculture
 Be_d_pre ~ normal(100,90);  //Prior for pre-1980 development
 Be_d_post ~ normal(100,90);  //Prior forpost-1980 development
 Be_w ~ normal(15,5);   //Prior for undeveloped
-
 Be_ch ~ normal(0.005,0.0025);  //Prior for chickens
 Be_h ~ normal(0.02,0.01);  //Prior for hogs (swine)
 Be_cw ~ normal(0,5);  //Uninformed Prior for cows
-
 Be_dch ~ normal(1,.03);   //Prior for point source delivery
 sigma_res ~ normal(0,1000000); //st error of the model
 sigma_w ~ normal(0,1000000);     //st. deviation of random effect hyperdistribution
@@ -161,18 +151,14 @@ pic_p[4] ~ normal(Bp_mean,sigma_B1);  //precipitation distribution for undev
 pic_p[5] ~ normal(Bp_mean,sigma_B1);  //precipitation distribution for chicken
 pic_p[6] ~ normal(Bp_mean,sigma_B1);  //precipitation distribution for swine
 pic_p[7] ~ normal(Bp_mean,sigma_B1);  //precipitation distribution for cow
-
-
 Sn ~ normal(.2,.08);    //Prior for stream retention rate
 Sn2 ~ normal(30,8.5);   //Prior for reservoir retention rate
 PIC_q ~ normal(0,1);    //prior for PIC for retention
 ly ~ normal(y_hat,sigma_res);        //parameter that calibrates ly_hat with ly () 
 load ~ normal(ly,SD);                // load = WRTDS estimate, SD = WRTDS sd
-
 }
 
 generated quantities {
-
 }
 '
 
@@ -217,8 +203,6 @@ matrix[nr,9] pr;                  //precipitation matrix from Jan-Aug
 }
 
 transformed data{
-
-
 }
 
 parameters {  
@@ -314,7 +298,6 @@ W[i] = Be_w * pow(prec[i],pic_p[4]) .* W_lc[i];
 C[i] = Be_ch * pow(prec[i],pic_p[5]) .* C_r[i];
 H[i] = Be_h * pow(prec[i],pic_p[6]) .* H_r[i];
 Cw[i] = Be_cw * pow(prec[i],pic_p[7]) .* Cw_r[i];
-
 Dch[i] = Be_dch * Disch[i];
 }
 
@@ -324,7 +307,6 @@ for (i in 1:nr){
 w= wsd[i];
 sigma[i] = sqrt(pow(SD[i],2)+pow(sigma_res,2));   //with regular sigma values
 alpha_vals[i] = alpha[w];
-
 }
 //Sum loadings from all sources
 tot =  A + D + W + C + H + Cw + Dch;
@@ -341,7 +323,6 @@ Be_w ~ normal(15,5);   //Prior for undeveloped
 Be_ch ~ normal(0.005,0.0025);  //Prior for chickens
 Be_h ~ normal(0.02,0.01);  //Prior for hogs (swine)
 Be_cw ~ normal(0,5);  //Uninformed Prior for cows
-
 Be_dch ~ normal(1,.03);   //Prior for point source delivery
 sigma_res ~ normal(0,1000000); //st error of the model
 sigma_w ~ normal(0,1000000);     //st. deviation of random effect hyperdistribution
@@ -362,20 +343,22 @@ Be_psi~ uniform (1,8);  //prior for precipitation weighting coef.
 
 ly ~ normal(y_hat,sigma_res);        //parameter that calibrates ly_hat with ly () 
 load ~ normal(ly,SD);                // load = WRTDS estimate, SD = WRTDS sd
-
 }
 
 generated quantities {
-
 }
 '
-Annual_TP <- readRDS("./Annual_TP.rds") #load annual input
-#run the annual model (data is the list of data sets. For other parameters, return to the function description)
+
+Annual_TP <- readRDS("./Annual_TP.rds") #load annual input data set
+
+library("rstan")
+library("rstudioapi")
+#run the annual model (data is the list of data sets. For other parameters, return to the function description or the example provided in the readme)
 model_annual = stan(model_code=stanmodelcode_annual, data=Annual_TP, iter=iter, 
              warmup=warmup, thin=thin, chains=3,cores=3,
              control = list(adapt_delta =adapt_delta ,max_treedepth =max_treedepth ))
 
-Summer_TP <- readRDS("./Summer_TP.rds") #load summer input
+Summer_TP <- readRDS("./Summer_TP.rds") #load summer input data set
 #run the summer model
 model_summer = stan(model_code=stanmodelcode_summer, data=Summer_TP, iter=iter, 
              warmup=warmup, thin=thin, chains=3,cores=3,
