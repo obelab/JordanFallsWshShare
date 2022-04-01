@@ -9,4 +9,5 @@ Summer_TP.rds- This is a R data file that includes all the input data sets for t
 
 RStan_codes_WRR.R- RStan code needed to run the models. The "rstan" (https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started) and "rstudioapi" packages need to be installed prior to running the models. 
 # Example
-Step 1: install the packages Step 2: run the code for stanmodelcode_annual Step 3: run the code for stan with the following parameters: model_code=stanmodelcode_annual data=Annual_TP
+Step 1: install the packages 
+Step 2: run the code for stanmodelcode_annual Step 3: run the code for stan with the following parameters: model_code=stanmodelcode_annual data=Annual_TP
