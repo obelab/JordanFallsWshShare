@@ -1,5 +1,5 @@
 # JordanFallsWshWRR
-The files here include data sets and codes for the following manuscript: Contrasting annual and summer phosphorus loading and retention rates using a hybrid Bayesian watershed model
+The files here include data sets and codes for the following manuscript: Contrasting annual and summer phosphorus loading and retention rates using a hybrid Bayesian watershed model.
 
 Items in this repository:
 
