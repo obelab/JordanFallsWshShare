@@ -1,3 +1,7 @@
+#Install and load the libraries
+library("rstan")
+library("rstudioapi")
+
 stanmodelcode_annual = '
 
 data { 
@@ -37,11 +41,9 @@ int l_start [nr];			            //index to link subwatersheds to LMSs
 int l_end [nr];			              //index to link subwatersheds to LMSs
 int d_start [nr];			            //index to link dischargers to LMSs
 int d_end [nr];			              //index to link dischargers to LMSs
-
 }
 
 transformed data{
-
 }
 
 parameters {  
@@ -64,25 +66,23 @@ vector [wshed_size] alpha;			//# of watersheds
 real<lower = 0, upper = 2> sigma_B1;		//PIC SD
 real<lower = 0, upper = 3> Bp_mean;		//PIC mean
 vector [nr] ly;					// unknown true loads
-
 }
 
 transformed parameters {
-
-
 }
 
 model {
 vector [nr] tot; 			// Sum of all loadings from all sources
 vector [nr] sigma;		//SD for watershed random effects
 vector [nr] y_hat;		//total loadings plus random effects minus waterbody losses
-vector [nr] A;			//To compile Agriculture with PIC
 vector [nr] Dpr;			//To compile pre-1980 urban with PIC
 vector [nr] Dpt;			//To compile post-1980 urban with PIC
+vector [nr] A;			//To compile Agricultur with PIC 
 vector [nr] W;			//To compile undeveloped urban with PIC
+vector [nr] D;          //Total developed vector
 vector [nr] Dch; 		 	//To compile dischargers with stream/reservoir losses
 vector [nr] alpha_vals;		// Watershed indicator
-vector [nr] A;			//Agriculture vector
+vector [nr] A_lc;			//Agriculture vector
 vector [nr] D_lc_pre;		//pre-1980  vector		
 vector [nr] D_lc_post;		//post-1980  vector
 vector [nr] W_lc;		//Undeveloped  vector
@@ -94,6 +94,7 @@ vector [nr] C_r;   		//chickens for aggregating subwatersheds
 vector [nr] H_r;			//swine for aggregating subwatersheds
 vector [nr] Cw_r;		//cows  for aggregating subwatersheds
 vector [nr] y;				//loading
+int w;
 
 // Loop to determine export for each watershed-year
 for(i in 1:nr){
@@ -122,30 +123,25 @@ Cw[i] = Be_cw * pow(av_prec2[i],pic_p[7]) .* Cw_r[i];
 Dch[i] = Be_dch * Disch[i];
 }
 
-
 for (i in 1:nr){
   //Loop to determine random effect for each watershed
 w= wsd[i];
 sigma[i] = sqrt(pow(SD[i],2)+pow(sigma_res,2));   //with regular sigma values
 alpha_vals[i] = alpha[w];
-
 }
 //Sum loadings from all sources
 tot =  A + D + W + C + H + Cw + Dch;
 //Add random effects to source loadings and subtract losses from upstream loads
 y_hat = tot + alpha_vals - up_t_load1 .* (1-(exp((-Sn ./ (1+PIC_q*av_prec)) .* str_loss_load1) .* exp((-Sn2 ./ (1+PIC_q*av_prec)) ./ res_loss_load1))) - up_t_load2 .* (1-(exp((-Sn ./ (1+PIC_q*av_prec)) .* str_loss_load2) .* exp((-Sn2 ./ (1+PIC_q*av_prec)) ./ res_loss_load2))) - up_t_load3 .* (1-(exp((-Sn ./(1+PIC_q*av_prec)) .* str_loss_load3) .* exp((-Sn2 ./ (1+PIC_q*av_prec)) ./ res_loss_load3)));
 
-
 //priors
 Be_a ~ normal(100,65);  //Prior for agriculture
 Be_d_pre ~ normal(100,90);  //Prior for pre-1980 development
 Be_d_post ~ normal(100,90);  //Prior forpost-1980 development
 Be_w ~ normal(15,5);   //Prior for undeveloped
-
 Be_ch ~ normal(0.005,0.0025);  //Prior for chickens
 Be_h ~ normal(0.02,0.01);  //Prior for hogs (swine)
 Be_cw ~ normal(0,5);  //Uninformed Prior for cows
-
 Be_dch ~ normal(1,.03);   //Prior for point source delivery
 sigma_res ~ normal(0,1000000); //st error of the model
 sigma_w ~ normal(0,1000000);     //st. deviation of random effect hyperdistribution
@@ -159,18 +155,14 @@ pic_p[4] ~ normal(Bp_mean,sigma_B1);  //precipitation distribution for undev
 pic_p[5] ~ normal(Bp_mean,sigma_B1);  //precipitation distribution for chicken
 pic_p[6] ~ normal(Bp_mean,sigma_B1);  //precipitation distribution for swine
 pic_p[7] ~ normal(Bp_mean,sigma_B1);  //precipitation distribution for cow
-
-
 Sn ~ normal(.2,.08);    //Prior for stream retention rate
 Sn2 ~ normal(30,8.5);   //Prior for reservoir retention rate
 PIC_q ~ normal(0,1);    //prior for PIC for retention
 ly ~ normal(y_hat,sigma_res);        //parameter that calibrates ly_hat with ly () 
 load ~ normal(ly,SD);                // load = WRTDS estimate, SD = WRTDS sd
-
 }
 
 generated quantities {
-
 }
 '
 
@@ -215,8 +207,6 @@ matrix[nr,9] pr;                  //precipitation matrix from Jan-Aug
 }
 
 transformed data{
-
-
 }
 
 parameters {  
@@ -257,9 +247,10 @@ vector [nr] Dpt;			//To compile post-1980 urban with PIC
 vector [nr] W;			//To compile undeveloped urban with PIC
 vector [nr] Dch; 		 	//To compile dischargers with stream/reservoir losses
 vector [nr] alpha_vals;		// Watershed indicator
-vector [nr] A;			//Agriculture vector
+vector [nr] A_lc;			//Agriculture vector
 vector [nr] D_lc_pre;		//pre-1980  vector		
 vector [nr] D_lc_post;		//post-1980  vector
+vector [nr] D;		//Total developed vector
 vector [nr] W_lc;		//Undeveloped  vector
 vector [nr] Disch;		//point source dischargers
 vector [nr] C;   			//chickens for adding PIC
@@ -268,11 +259,11 @@ vector [nr] Cw;			//cows for adding PIC
 vector [nr] C_r;   		//chickens for aggregating subwatersheds
 vector [nr] H_r;			//swine for aggregating subwatersheds
 vector [nr] Cw_r;		//cows  for aggregating subwatersheds
-vector [nr] y;				//loading
+vector [nr] ly;				//loading
 vector [8] psi;       //precipitation weight
 vector [nr] prec;     //scaled precipitation
 vector [nr] av_prec;  //normalized precipitation
-
+int w;
 //Loop to get precipitation weighting coefficient
 for (m in 1:8){
 if (m<=(Be_psi-1)){
@@ -312,7 +303,6 @@ W[i] = Be_w * pow(prec[i],pic_p[4]) .* W_lc[i];
 C[i] = Be_ch * pow(prec[i],pic_p[5]) .* C_r[i];
 H[i] = Be_h * pow(prec[i],pic_p[6]) .* H_r[i];
 Cw[i] = Be_cw * pow(prec[i],pic_p[7]) .* Cw_r[i];
-
 Dch[i] = Be_dch * Disch[i];
 }
 
@@ -322,7 +312,6 @@ for (i in 1:nr){
 w= wsd[i];
 sigma[i] = sqrt(pow(SD[i],2)+pow(sigma_res,2));   //with regular sigma values
 alpha_vals[i] = alpha[w];
-
 }
 //Sum loadings from all sources
 tot =  A + D + W + C + H + Cw + Dch;
@@ -339,7 +328,6 @@ Be_w ~ normal(15,5);   //Prior for undeveloped
 Be_ch ~ normal(0.005,0.0025);  //Prior for chickens
 Be_h ~ normal(0.02,0.01);  //Prior for hogs (swine)
 Be_cw ~ normal(0,5);  //Uninformed Prior for cows
-
 Be_dch ~ normal(1,.03);   //Prior for point source delivery
 sigma_res ~ normal(0,1000000); //st error of the model
 sigma_w ~ normal(0,1000000);     //st. deviation of random effect hyperdistribution
@@ -360,18 +348,20 @@ Be_psi~ uniform (1,8);  //prior for precipitation weighting coef.
 
 ly ~ normal(y_hat,sigma_res);        //parameter that calibrates ly_hat with ly () 
 load ~ normal(ly,SD);                // load = WRTDS estimate, SD = WRTDS sd
-
 }
 
 generated quantities {
-
 }
 '
-#run the annual model (data is the list of data sets. For other parameters, return to the function description)
-model_annual = stan(model_code=stanmodelcode_annual, data=data, iter=iter, 
-             warmup=warmup, thin=, chains=3,cores=3,
+
+Annual_TP <- readRDS("./Annual_TP.rds") #load annual input data set
+#run the annual model (data is the list of data sets. For other parameters, return to the function description or the example provided in the README)
+model_annual = stan(model_code=stanmodelcode_annual, data=Annual_TP, iter=iter, 
+             warmup=warmup, thin=thin, chains=3,cores=3,
              control = list(adapt_delta =adapt_delta ,max_treedepth =max_treedepth ))
+
+Summer_TP <- readRDS("./Summer_TP.rds") #load summer input data set
 #run the summer model
-model_summer = stan(model_code=stanmodelcode_summer, data=data, iter=iter, 
-             warmup=warmup, thin=, chains=3,cores=3,
+model_summer = stan(model_code=stanmodelcode_summer, data=Summer_TP, iter=iter, 
+             warmup=warmup, thin=thin, chains=3,cores=3,
              control = list(adapt_delta =adapt_delta ,max_treedepth =max_treedepth ))
