@@ -259,7 +259,7 @@ vector [nr] Cw;			//cows for adding PIC
 vector [nr] C_r;   		//chickens for aggregating subwatersheds
 vector [nr] H_r;			//swine for aggregating subwatersheds
 vector [nr] Cw_r;		//cows  for aggregating subwatersheds
-vector [nr] y;				//loading
+vector [nr] ly;				//loading
 vector [8] psi;       //precipitation weight
 vector [nr] prec;     //scaled precipitation
 vector [nr] av_prec;  //normalized precipitation
