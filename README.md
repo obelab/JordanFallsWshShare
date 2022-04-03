@@ -11,7 +11,7 @@ RStan_codes_WRR.R- RStan code needed to run the models. The "rstan" (https://git
 # Example
 Step 1: Install "rstan" and "rstudioapi" packages. 
 
-Step 2: Run the "stanmodelcode_annual" stan code (line #1 in the "RStan_codes_WRR.R" code) for the annual model.
+Step 2: Run the "stanmodelcode_annual" stan code (line #5 in the "RStan_codes_WRR.R" code) for the annual model.
 
 Step 3: Upload the annual model input data set (Annual_TP).
 
