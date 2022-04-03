@@ -79,7 +79,7 @@ vector [nr] Dpr;			//To compile pre-1980 urban with PIC
 vector [nr] Dpt;			//To compile post-1980 urban with PIC
 vector [nr] A;			//To compile Agricultur with PIC 
 vector [nr] W;			//To compile undeveloped urban with PIC
-vector [nr] D;
+vector [nr] D;          //Total developed vector
 vector [nr] Dch; 		 	//To compile dischargers with stream/reservoir losses
 vector [nr] alpha_vals;		// Watershed indicator
 vector [nr] A_lc;			//Agriculture vector
@@ -250,6 +250,7 @@ vector [nr] alpha_vals;		// Watershed indicator
 vector [nr] A_lc;			//Agriculture vector
 vector [nr] D_lc_pre;		//pre-1980  vector		
 vector [nr] D_lc_post;		//post-1980  vector
+vector [nr] D;		//Total developed vector
 vector [nr] W_lc;		//Undeveloped  vector
 vector [nr] Disch;		//point source dischargers
 vector [nr] C;   			//chickens for adding PIC
