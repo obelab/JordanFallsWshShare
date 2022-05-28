@@ -48,20 +48,20 @@ transformed data{
 
 parameters {  
 
-real<lower =0> Be_a;        //Agriculture EC
-real<lower =0> Be_d_pre;        //pre-1980 developed EC 
-real<lower =0> Be_d_post;        //post-1980 developed EC
-real<lower =0> Be_w;       //Undeveloped EC
-real<lower =0, upper = 1> Be_ch;       //Chickens EC
-real<lower =0, upper = 1> Be_h;       //Hogs (swine) EC
-real<lower =0, upper = 1> Be_cw;       //Cows EC
-real <lower =0, upper = 1> Sn;          // Stream retention
-real <lower =1, upper = 60> Sn2;        //Reservoir retention
+real<lower =0> Be_a;        //Agriculture EC (kg/km2/yr)
+real<lower =0> Be_d_pre;        //pre-1980 developed EC (kg/km2/yr)
+real<lower =0> Be_d_post;        //post-1980 developed EC (kg/km2/yr)
+real<lower =0> Be_w;       //Undeveloped EC (kg/km2/yr)
+real<lower =0, upper = 1> Be_ch;       //Chickens EC (kg/an/yr)
+real<lower =0, upper = 1> Be_h;       //Hogs (swine) EC (kg/an/yr)
+real<lower =0, upper = 1> Be_cw;       //Cows EC (kg/an/yr)
+real <lower =0, upper = 1> Sn;          // Stream retention (1/d)
+real <lower =1, upper = 60> Sn2;        //Reservoir retention (m/yr)
 real <lower =0, upper = 0.40> PIC_q;      //PIC for retention
 vector<lower =0, upper = 10> [7] pic_p;   //PIC for land classes
 real <lower=0> Be_dch;      			//Point source DC 
-real<lower=0, upper = 1000000> sigma_res;		//Model residual SD
-real <lower=0, upper = 1000000> sigma_w;		//Random effect SD
+real<lower=0, upper = 1000000> sigma_res;		//Model residual SD (kg/yr)
+real <lower=0, upper = 1000000> sigma_w;		//Random effect SD (kg/yr)
 vector [wshed_size] alpha;			//# of watersheds
 real<lower = 0, upper = 2> sigma_B1;		//PIC SD
 real<lower = 0, upper = 3> Bp_mean;		//PIC mean
@@ -320,17 +320,17 @@ y_hat = tot + trans * alpha_vals - up_t_load1 .* (1-(exp((-Sn ./ (1+PIC_q*av_pre
 
 
 //priors
-Be_a ~ normal(100,65);  //Prior for agriculture
-Be_d_pre ~ normal(100,90);  //Prior for pre-1980 development
-Be_d_post ~ normal(100,90);  //Prior forpost-1980 development
-Be_w ~ normal(15,5);   //Prior for undeveloped
+Be_a ~ normal(100,65);  //Prior for agriculture (kg/km2/yr)
+Be_d_pre ~ normal(100,90);  //Prior for pre-1980 development (kg/km2/yr)
+Be_d_post ~ normal(100,90);  //Prior forpost-1980 development (kg/km2/yr)
+Be_w ~ normal(15,5);   //Prior for undeveloped (kg/km2/yr)
 
-Be_ch ~ normal(0.005,0.0025);  //Prior for chickens
-Be_h ~ normal(0.02,0.01);  //Prior for hogs (swine)
-Be_cw ~ normal(0,5);  //Uninformed Prior for cows
+Be_ch ~ normal(0.005,0.0025);  //Prior for chickens (kg/an/yr)
+Be_h ~ normal(0.02,0.01);  //Prior for hogs (swine) (kg/an/yr)
+Be_cw ~ normal(0,5);  //Uninformed Prior for cows (kg/an/yr)
 Be_dch ~ normal(1,.03);   //Prior for point source delivery
-sigma_res ~ normal(0,1000000); //st error of the model
-sigma_w ~ normal(0,1000000);     //st. deviation of random effect hyperdistribution
+sigma_res ~ normal(0,1000000); //st error of the model (kg/yr)
+sigma_w ~ normal(0,1000000);     //st. deviation of random effect hyperdistribution (kg/yr)
 alpha ~ normal(0,sigma_w);    //watershed random effects
 sigma_B1 ~ normal(0,.5);  //st. deviation of precipitation coefficient
 Bp_mean ~ normal(1,.5);    //mean PIC for hyperdistribution
@@ -341,8 +341,8 @@ pic_p[4] ~ normal(Bp_mean,sigma_B1);  //precipitation distribution for undev
 pic_p[5] ~ normal(Bp_mean,sigma_B1);  //precipitation distribution for chicken
 pic_p[6] ~ normal(Bp_mean,sigma_B1);  //precipitation distribution for swine
 pic_p[7] ~ normal(Bp_mean,sigma_B1);  //precipitation distribution for cow
-Sn ~ normal(.2,.08);    //Prior for stream retention rate
-Sn2 ~ normal(30,8.5);   //Prior for reservoir retention rate
+Sn ~ normal(.2,.08);    //Prior for stream retention rate (1/d)
+Sn2 ~ normal(30,8.5);   //Prior for reservoir retention rate (m/yr)
 PIC_q ~ normal(0,1);    //prior for PIC for retention
 Be_psi~ uniform (1,8);  //prior for precipitation weighting coef.
 
