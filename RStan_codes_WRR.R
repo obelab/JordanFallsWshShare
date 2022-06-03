@@ -146,8 +146,8 @@ Be_dch ~ normal(1,.03);   //Prior for point source delivery
 sigma_res ~ normal(0,1000000); //st error of the model
 sigma_w ~ normal(0,1000000);     //st. deviation of random effect hyperdistribution
 alpha ~ normal(0,sigma_w);    //watershed random effects
-sigma_B1 ~ normal(0,.5);  //st. deviation of precipitation coefficient
-Bp_mean ~ normal(1,.5);    //mean PIC for hyperdistribution
+sigma_B1 ~ normal(0,1);  //st. deviation of precipitation coefficient
+Bp_mean ~ normal(1,1);    //mean PIC for hyperdistribution
 pic_p[1] ~ normal(Bp_mean,sigma_B1);  //precipitation distribution for ag
 pic_p[2] ~ normal(Bp_mean,sigma_B1);  //precipitation distribution for pre-1980 deve
 pic_p[3] ~ normal(Bp_mean,sigma_B1);  //precipitation distribution for post-1980 dev
@@ -337,8 +337,8 @@ Be_dch ~ normal(1,.03);   //Prior for point source delivery
 sigma_res ~ normal(0,1000000); //st error of the model (kg/yr)
 sigma_w ~ normal(0,1000000);     //st. deviation of random effect hyperdistribution (kg/yr)
 alpha ~ normal(0,sigma_w);    //watershed random effects
-sigma_B1 ~ normal(0,.5);  //st. deviation of precipitation coefficient
-Bp_mean ~ normal(1,.5);    //mean PIC for hyperdistribution
+sigma_B1 ~ normal(0,1);  //st. deviation of precipitation coefficient
+Bp_mean ~ normal(1,1);    //mean PIC for hyperdistribution
 pic_p[1] ~ normal(Bp_mean,sigma_B1);  //precipitation distribution for ag
 pic_p[2] ~ normal(Bp_mean,sigma_B1);  //precipitation distribution for pre-1980 deve
 pic_p[3] ~ normal(Bp_mean,sigma_B1);  //precipitation distribution for post-1980 dev
