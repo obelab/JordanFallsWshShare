@@ -165,6 +165,11 @@ load ~ normal(ly,SD);                // load = WRTDS estimate, SD = WRTDS sd
 generated quantities {
 }
 '
+Annual_TP <- readRDS("./Annual_TP.rds") #load annual input data set
+#run the annual model (data is the list of data sets. For other parameters, return to the function description or the example provided in the README)
+model_annual = stan(model_code=stanmodelcode_annual, data=Annual_TP, iter=iter, 
+             warmup=warmup, thin=thin, chains=chains,cores=cores,
+             control = list(adapt_delta =adapt_delta ,max_treedepth =max_treedepth ))
 
 stanmodelcode_summer = '
 
@@ -353,15 +358,8 @@ load ~ normal(ly,SD);                // load = WRTDS estimate, SD = WRTDS sd
 generated quantities {
 }
 '
-
-Annual_TP <- readRDS("./Annual_TP.rds") #load annual input data set
-#run the annual model (data is the list of data sets. For other parameters, return to the function description or the example provided in the README)
-model_annual = stan(model_code=stanmodelcode_annual, data=Annual_TP, iter=iter, 
-             warmup=warmup, thin=thin, chains=3,cores=3,
-             control = list(adapt_delta =adapt_delta ,max_treedepth =max_treedepth ))
-
 Summer_TP <- readRDS("./Summer_TP.rds") #load summer input data set
 #run the summer model
 model_summer = stan(model_code=stanmodelcode_summer, data=Summer_TP, iter=iter, 
-             warmup=warmup, thin=thin, chains=3,cores=3,
+             warmup=warmup, thin=thin, chains=chains,cores=cores,
              control = list(adapt_delta =adapt_delta ,max_treedepth =max_treedepth ))
