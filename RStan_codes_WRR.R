@@ -93,7 +93,6 @@ vector [nr] Cw;			//cows for adding PIC
 vector [nr] C_r;   		//chickens for aggregating subwatersheds
 vector [nr] H_r;			//swine for aggregating subwatersheds
 vector [nr] Cw_r;		//cows  for aggregating subwatersheds
-vector [nr] ly;				//loading
 int w;
 
 // Loop to determine export for each watershed-year
@@ -208,7 +207,7 @@ int l_start [nr];			            //index to link subwatersheds to LMSs
 int l_end [nr];			              //index to link subwatersheds to LMSs
 int d_start [nr];			            //index to link dischargers to LMSs
 int d_end [nr];			              //index to link dischargers to LMSs
-matrix[nr,9] pr;                  //precipitation matrix from Jan-Aug
+matrix[nr,8] pr;                  //precipitation matrix from Jan-Aug
 }
 
 transformed data{
@@ -264,7 +263,6 @@ vector [nr] Cw;			//cows for adding PIC
 vector [nr] C_r;   		//chickens for aggregating subwatersheds
 vector [nr] H_r;			//swine for aggregating subwatersheds
 vector [nr] Cw_r;		//cows  for aggregating subwatersheds
-vector [nr] ly;				//loading
 vector [8] psi;       //precipitation weight
 vector [nr] prec;     //scaled precipitation
 vector [nr] av_prec;  //normalized precipitation
@@ -319,9 +317,9 @@ sigma[i] = sqrt(pow(SD[i],2)+pow(sigma_res,2));   //with regular sigma values
 alpha_vals[i] = alpha[w];
 }
 //Sum loadings from all sources
-tot =  A + D + W + C + H + Cw + Dch;
+tot =  (A + D + W + C + H + Cw)/4 + Dch;
 //Add random effects to source loadings and subtract losses from upstream loads
-y_hat = tot + trans * alpha_vals - up_t_load1 .* (1-(exp((-Sn ./ (1+PIC_q*av_prec)) .* str_loss_load1) .* exp((-Sn2 ./ (1+PIC_q*av_prec)) ./ res_loss_load1))) - up_t_load2 .* (1-(exp((-Sn ./ (1+PIC_q*av_prec)) .* str_loss_load2) .* exp((-Sn2 ./ (1+PIC_q*av_prec)) ./ res_loss_load2))) - up_t_load3 .* (1-(exp((-Sn ./(1+PIC_q*av_prec)) .* str_loss_load3) .* exp((-Sn2 ./ (1+PIC_q*av_prec)) ./ res_loss_load3)));
+y_hat = tot + alpha_vals - up_t_load1 .* (1-(exp((-Sn ./ (1+PIC_q*av_prec)) .* str_loss_load1) .* exp((-Sn2 ./ (1+PIC_q*av_prec)) ./ res_loss_load1))) - up_t_load2 .* (1-(exp((-Sn ./ (1+PIC_q*av_prec)) .* str_loss_load2) .* exp((-Sn2 ./ (1+PIC_q*av_prec)) ./ res_loss_load2))) - up_t_load3 .* (1-(exp((-Sn ./(1+PIC_q*av_prec)) .* str_loss_load3) .* exp((-Sn2 ./ (1+PIC_q*av_prec)) ./ res_loss_load3)));
 
 
 //priors
@@ -351,7 +349,7 @@ Sn2 ~ normal(30,8.5);   //Prior for reservoir retention rate (m/yr)
 PIC_q ~ normal(0,1);    //prior for PIC for retention
 Be_psi~ uniform (1,8);  //prior for precipitation weighting coef.
 
-ly ~ normal(y_hat,sigma_res);        //parameter that calibrates ly_hat with ly () 
+ly ~ normal(y_hat,sigma_res);        //parameter that calibrates y_hat with ly () 
 load ~ normal(ly,SD);                // load = WRTDS estimate, SD = WRTDS sd
 }
 
